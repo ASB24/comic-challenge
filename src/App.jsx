@@ -10,7 +10,7 @@ Modal.setAppElement('#root')
 
 const GetIssues = () => {
   const { isLoading, error, data } = useQuery('issuesData', () =>
-     fetch(`${API_URL}/issues?sort=date_added:asc`).then(res =>
+     fetch(`${API_URL}/issues`).then(res =>
        res.json()
      )
    )
@@ -23,7 +23,9 @@ const GetIssues = () => {
 
    return(
     <div className='issues-list'>
-        {issues.filter(i => i.description !== null && i.description !== "<br />").map((i) => {
+        {issues
+          //.filter(i => i.description !== null && i.description !== "<br />" && i.description !== "<br/>")
+          .map((i) => {
           return <SpawnModal issue={i}></SpawnModal>
         })}
     </div>
@@ -32,11 +34,9 @@ const GetIssues = () => {
 
 const SpawnModal = (props) => {
   const issue = props.issue
-  //console.log(this.props.issue.cover_date)
   const [modalIsOpen, setIsOpen] = useState(false);
 
   let openModal = () => {
-    console.log(issue.id)
     setIsOpen(true)
   }
   let closeModal = () => setIsOpen(false)
@@ -50,17 +50,19 @@ const SpawnModal = (props) => {
   return(
     <>
     <div onClick={() => openModal()} className="card" style={{backgroundImage:`url("${issue.image.super_url}")`, boxShadow:"0 0 50px rgba(0, 0, 0, 0.515)"}}></div>
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        style={style}
-        contentLabel={props.issue.cover_date}
-        >
-        <img src={issue.image.screen_url} />
-        <h1>{issue.name ?? "El api no provee un nombre"}</h1>
-        <p dangerouslySetInnerHTML={{__html: issue.description ?? issue.deck ?? "No tiene descripcion"}}></p>
-        <span><i className="fa-sharp fa-solid fa-calendars"></i>{new Date(issue.cover_date).toLocaleDateString() ?? "No tiene fecha de publicacion"}</span>
-      </Modal>
+    <Modal
+      isOpen={modalIsOpen}
+      onRequestClose={closeModal}
+      style={style}
+      contentLabel={props.issue.cover_date}
+      >
+
+      <img src={issue.image.screen_url} />
+      <h1>{issue.name ?? issue.volume.name ?? "El api no provee un nombre de issue ni de volumen"}</h1>
+      <p dangerouslySetInnerHTML={{__html: issue.description ?? issue.deck ?? "No description"}}></p>
+      <span><i className="fa-sharp fa-solid fa-calendars"></i>Release Date: {new Date(issue.cover_date).toLocaleDateString() ?? "No tiene fecha de publicacion"}</span>
+      
+    </Modal>
     </>
   )
 }
