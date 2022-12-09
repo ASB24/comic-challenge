@@ -1,4 +1,8 @@
 # ComicCon
+###Reminder
+Remember to create a .env file in the /server directory with "API_KEY" as your ComicVineAPI api key
+== API_KEY = your_api_key ==
+---
 To run the project you can do the following:
 ## Run the FASTAPI server
 In the /server directory run:
